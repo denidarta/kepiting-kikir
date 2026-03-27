@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsOptional, IsDateString } from 'class-validator';
-import { TransactionType } from '../entities/transaction.entity';
 
 export class CreateTransactionDto {
   @ApiProperty({ enum: ['borrow', 'return'], example: 'borrow' })
   @IsEnum(['borrow', 'return'])
-  type: TransactionType;
+  type: 'borrow' | 'return';
 
   @ApiProperty({ example: 1001, description: 'Book SKU' })
   @IsNumber()
