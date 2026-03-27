@@ -20,9 +20,14 @@ export class BooksRepository {
     return this.books.filter((b) => b.libraryId === libraryId);
   }
 
+  findByIsbn(isbn: string): Book[] {
+    return this.books.filter((b) => b.isbn === isbn);
+  }
+
   create(dto: CreateBookDto, library: Book['library']): Book {
     const newBook: Book = {
       sku: dto.sku,
+      isbn: dto.isbn,
       title: dto.title,
       author: dto.author,
       libraryId: dto.libraryId,

@@ -4,6 +4,7 @@ import { libraries } from './libraries.data';
 export const books: Book[] = [
   {
     sku: 1001,
+    isbn: '978-0132350884',
     title: 'Clean Code',
     author: 'Robert C. Martin',
     libraryId: 1,
@@ -14,6 +15,7 @@ export const books: Book[] = [
   },
   {
     sku: 1002,
+    isbn: '978-0201633610',
     title: 'The Pragmatic Programmer',
     author: 'David Thomas & Andrew Hunt',
     libraryId: 1,
@@ -24,6 +26,18 @@ export const books: Book[] = [
   },
   {
     sku: 1003,
+    isbn: '978-0201633610',
+    title: 'The Pragmatic Programmer',
+    author: 'David Thomas & Andrew Hunt',
+    libraryId: 2,
+    library: libraries[1],
+    createdAt: new Date('2024-03-20'),
+    updatedAt: new Date('2024-03-20'),
+    available: true,
+  },
+  {
+    sku: 1004,
+    isbn: '978-0201633612',
     title: 'Design Patterns',
     author: 'Gang of Four',
     libraryId: 2,
@@ -33,8 +47,9 @@ export const books: Book[] = [
     available: true,
   },
   {
-    sku: 1004,
-    title: 'You Don`t Know JS',
+    sku: 1005,
+    isbn: '978-1491904244',
+    title: "You Don't Know JS",
     author: 'Kyle Simpson',
     libraryId: 3,
     library: libraries[2],

@@ -8,12 +8,7 @@ import {
   Delete,
   ParseIntPipe,
 } from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiTags,
-  ApiResponse,
-  ApiParam,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -40,9 +35,15 @@ export class BooksController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Validation failed — invalid or missing fields' })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation failed — invalid or missing fields',
+  })
   @ApiResponse({ status: 404, description: 'Library not found' })
-  @ApiResponse({ status: 409, description: 'Book with this SKU already exists' })
+  @ApiResponse({
+    status: 409,
+    description: 'Book with this SKU already exists',
+  })
   create(@Body() createBookDto: CreateBookDto) {
     return this.booksService.create(createBookDto);
   }

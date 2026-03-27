@@ -21,19 +21,42 @@ export class TransactionsService {
     // Validasi user exists
     const user = this.usersRepository.findById(createTransactionDto.userId);
     if (!user)
-      throw new NotFoundException(`User with id ${createTransactionDto.userId} not found`);
+      throw new NotFoundException(
+        `User with id ${createTransactionDto.userId} not found`,
+      );
 
     // Validasi book exists
     const book = this.booksRepository.findBySku(createTransactionDto.bookSku);
     if (!book)
-      throw new NotFoundException(`Book with SKU ${createTransactionDto.bookSku} not found`);
+      throw new NotFoundException(
+        `Book with SKU ${createTransactionDto.bookSku} not found`,
+      );
+
+    // Validasi user tidak sedang meminjam judul yang sama (cek via ISBN)
+    if (createTransactionDto.type === 'borrow') {
+      const copiesOfSameTitle = this.booksRepository.findByIsbn(book.isbn);
+      const skusOfSameTitle = copiesOfSameTitle.map((b) => b.sku);
+      const activeBorrow =
+        this.transactionsRepository.findActiveBorrowByUserAndIsbn(
+          createTransactionDto.userId,
+          skusOfSameTitle,
+        );
+      if (activeBorrow)
+        throw new BadRequestException(
+          `User with id ${createTransactionDto.userId} is already borrowing a copy of "${book.title}"`,
+        );
+    }
 
     // Validasi ketersediaan buku
     if (createTransactionDto.type === 'borrow' && !book.available)
-      throw new BadRequestException(`Book with SKU ${createTransactionDto.bookSku} is not available for borrowing`);
+      throw new BadRequestException(
+        `Book with SKU ${createTransactionDto.bookSku} is not available for borrowing`,
+      );
 
     if (createTransactionDto.type === 'return' && book.available)
-      throw new BadRequestException(`Book with SKU ${createTransactionDto.bookSku} has not been borrowed`);
+      throw new BadRequestException(
+        `Book with SKU ${createTransactionDto.bookSku} has not been borrowed`,
+      );
 
     // Update ketersediaan buku
     this.booksRepository.update(book.sku, {
@@ -63,7 +86,8 @@ export class TransactionsService {
 
   findByBook(bookSku: number): Transaction[] {
     const book = this.booksRepository.findBySku(bookSku);
-    if (!book) throw new NotFoundException(`Book with SKU ${bookSku} not found`);
+    if (!book)
+      throw new NotFoundException(`Book with SKU ${bookSku} not found`);
 
     return this.transactionsRepository.findByBookSku(bookSku);
   }

@@ -8,12 +8,7 @@ import {
   Delete,
   ParseIntPipe,
 } from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiTags,
-  ApiResponse,
-  ApiParam,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { LibraryService } from './library.service';
 import { CreateLibraryDto } from './dto/create-library.dto';
 import { UpdateLibraryDto } from './dto/update-library.dto';
@@ -38,7 +33,10 @@ export class LibraryController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Validation failed — invalid or missing fields' })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation failed — invalid or missing fields',
+  })
   @ApiResponse({ status: 409, description: 'Library name already exists' })
   create(@Body() createLibraryDto: CreateLibraryDto) {
     return this.libraryService.create(createLibraryDto);

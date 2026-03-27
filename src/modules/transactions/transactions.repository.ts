@@ -24,6 +24,25 @@ export class TransactionsRepository {
     return this.transactions.filter((t) => t.bookSku === bookSku);
   }
 
+  findActiveBorrowByUserAndIsbn(
+    userId: number,
+    bookSkus: number[],
+  ): Transaction | undefined {
+    return this.transactions.find(
+      (t) =>
+        t.userId === userId &&
+        t.type === 'borrow' &&
+        bookSkus.includes(t.bookSku) &&
+        !this.transactions.some(
+          (r) =>
+            r.userId === userId &&
+            r.type === 'return' &&
+            r.bookSku === t.bookSku &&
+            r.transactedAt > t.transactedAt,
+        ),
+    );
+  }
+
   create(dto: CreateTransactionDto, book: Transaction['book']): Transaction {
     const newTransaction: Transaction = {
       id: this.counter++,

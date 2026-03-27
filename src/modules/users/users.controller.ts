@@ -8,12 +8,7 @@ import {
   Delete,
   ParseIntPipe,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -38,7 +33,10 @@ export class UsersController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Validation failed — invalid or missing fields' })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation failed — invalid or missing fields',
+  })
   @ApiResponse({ status: 409, description: 'Email already in use' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);

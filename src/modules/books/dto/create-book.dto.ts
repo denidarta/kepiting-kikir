@@ -14,6 +14,13 @@ export class CreateBookDto {
   @Min(1)
   sku: number;
 
+  @ApiProperty({
+    example: '978-0132350884',
+    description: 'ISBN — shared across all physical copies of the same title',
+  })
+  @IsString()
+  isbn: string;
+
   @ApiProperty({ example: 'Clean Code' })
   @IsString()
   @MinLength(1)
