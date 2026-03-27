@@ -19,6 +19,7 @@ async function bootstrap() {
     .setTitle('Kepiting Kikir API')
     .setDescription('API documentation')
     .setVersion('1.0')
+    .addTag('transactions', 'Mengelola transaksi peminjaman dan pengembalian buku. Terdapat dua jenis transaksi: "borrow" untuk meminjam buku dan "return" untuk mengembalikan buku. Setiap transaksi terhubung ke user dan buku yang spesifik.')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
