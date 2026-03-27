@@ -1,26 +1,77 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { TransactionsRepository } from './transactions.repository';
+import { BooksRepository } from '../books/books.repository';
+import { UsersRepository } from '../users/users.repository';
+import { Transaction } from './entities/transaction.entity';
 
 @Injectable()
 export class TransactionsService {
-  create(createTransactionDto: CreateTransactionDto) {
-    return 'This action adds a new transaction';
+  constructor(
+    private readonly transactionsRepository: TransactionsRepository,
+    private readonly booksRepository: BooksRepository,
+    private readonly usersRepository: UsersRepository,
+  ) {}
+
+  create(createTransactionDto: CreateTransactionDto): Transaction {
+    // Validasi user exists
+    const user = this.usersRepository.findById(createTransactionDto.userId);
+    if (!user)
+      throw new NotFoundException(`User with id ${createTransactionDto.userId} not found`);
+
+    // Validasi book exists
+    const book = this.booksRepository.findBySku(createTransactionDto.bookSku);
+    if (!book)
+      throw new NotFoundException(`Book with SKU ${createTransactionDto.bookSku} not found`);
+
+    // Validasi ketersediaan buku
+    if (createTransactionDto.type === 'borrow' && !book.available)
+      throw new BadRequestException(`Book with SKU ${createTransactionDto.bookSku} is not available for borrowing`);
+
+    if (createTransactionDto.type === 'return' && book.available)
+      throw new BadRequestException(`Book with SKU ${createTransactionDto.bookSku} has not been borrowed`);
+
+    // Update ketersediaan buku
+    this.booksRepository.update(book.sku, {
+      available: createTransactionDto.type === 'return',
+    });
+
+    return this.transactionsRepository.create(createTransactionDto, book);
   }
 
-  findAll() {
-    return `This action returns all transactions`;
+  findAll(): Transaction[] {
+    return this.transactionsRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} transaction`;
+  findOne(id: number): Transaction {
+    const transaction = this.transactionsRepository.findById(id);
+    if (!transaction)
+      throw new NotFoundException(`Transaction with id ${id} not found`);
+    return transaction;
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
+  findByUser(userId: number): Transaction[] {
+    const user = this.usersRepository.findById(userId);
+    if (!user) throw new NotFoundException(`User with id ${userId} not found`);
+
+    return this.transactionsRepository.findByUserId(userId);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} transaction`;
+  findByBook(bookSku: number): Transaction[] {
+    const book = this.booksRepository.findBySku(bookSku);
+    if (!book) throw new NotFoundException(`Book with SKU ${bookSku} not found`);
+
+    return this.transactionsRepository.findByBookSku(bookSku);
+  }
+
+  remove(id: number): { message: string } {
+    const removed = this.transactionsRepository.remove(id);
+    if (!removed)
+      throw new NotFoundException(`Transaction with id ${id} not found`);
+    return { message: `Transaction with id ${id} successfully deleted` };
   }
 }
